@@ -28,5 +28,10 @@
     "connect": "~2.9.1",
     "grunt-mocha": "~0.4.1",
     "chai": "~1.8.1"
+  },
+  "volo" {
+   "dependencies": { 
+       "text" : "https://github.com/requirejs/text"
+   }
   }
 }
