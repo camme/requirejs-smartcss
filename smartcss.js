@@ -181,7 +181,7 @@ define(['text'], function(text) {
     function write(pluginName, moduleName, write) {
         if (moduleName in buildMap) {
             var text = buildMap[moduleName];
-            text = text.replace(/'/g, "\"");
+            text = text.replace(/'/g, "\"").replace(/\n/g, "\\n");
             write("define('" + pluginName + "!" + moduleName  + "', function () { return '" + text + "';});\n");
         }
     };
