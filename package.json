@@ -32,6 +32,7 @@
     "volo": {
         "dependencies": { 
             "text" : "requirejs/text"
-        }
+        },
+        "type": "directory"
     }
 }
