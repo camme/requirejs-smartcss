@@ -31,7 +31,7 @@
   },
   "volo" {
    "dependencies": { 
-       "text" : "https://github.com/requirejs/text"
+       "text" : "requirejs/text"
    }
   }
 }
