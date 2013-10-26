@@ -5,10 +5,31 @@
  * and unload loaded css parts if required
 */
 
-define(['lib/text'], function(text) {
+define(['text'], function(text) {
+
+
+    // for buildingPurposes, as in text plugin
+    var buildMap = {};
 
     function handleErrorsWhenLoading(error) {
         console.log(error);
+    }
+
+    // Add urlArgs to all internal urls in a css
+    function addUrlArgs(css, config) {
+
+        var appendString = (name.indexOf("?") > -1 ? "&" : "?") + config.urlArgs;
+
+        var urlsRe = /url\(("|'|)(.*?)("|'|)\)/gi;
+        var matchedUrl = urlsRe.exec(css);
+        while(matchedUrl) {
+            var appendString = (matchedUrl[2].indexOf("?") > -1 ? "&" : "?") + config.urlArgs;
+            css = css.replace(matchedUrl[2], matchedUrl[2] + appendString);
+            matchedUrl = urlsRe.exec(css);
+        }
+
+        return css;
+
     }
 
     // Adds a style tag with the css content into it
@@ -99,20 +120,47 @@ define(['lib/text'], function(text) {
     }
 
     function load(name, req, onload, config) {
-        (function(name, req, onload, config) {
-            if ((config.smartcss && config.smartcss.inject === true) || config.urlArgs) {
-                text.get(name, function(css) {
-                    addStyle(name, css);
-                    onload(name);
-                }, handleErrorsWhenLoading)
+        if (config.isBuild) {
+            var fs = require.nodeRequire('fs');
+            var path = require.nodeRequire('path');
+            var url = req.toUrl(name);
+            var content = fs.readFileSync(url, 'utf8');
+            if (config.urlArgs) {
+                content = addUrlArgs(content, config);
             }
-            else {
-                add(name, function(obj) {
-                    //console.log(obj.sheet);
-                    onload(name);
-                });
-            }
-        })(name, req, onload, config);
+            content = content + "\n /*@ sourceURL=" + name + " */";
+            buildMap[name] = content;
+            onload();
+        }
+        else {
+            (function(name, req, onload, config) {
+                if ((config && config.smartcss && config.smartcss.inject === true) || (config && config.urlArgs)) {
+
+                    // add the url args manually to the link since the text plugin doesnt seem to do it
+                    if (config.urlArgs) {
+                        name += (name.indexOf("?") > -1 ? "&" : "?") + config.urlArgs;
+                    }
+
+                    // fetch the data with the text plugin
+                    text.get(name, function(css) {
+
+                        if (config.urlArgs) {
+                            css = addUrlArgs(css, config);
+                        }
+
+                        addStyle(name, css);
+                        onload(name);
+                    }, handleErrorsWhenLoading);
+
+                }
+                else {
+                    add(name, function(obj) {
+                        //console.log(obj.sheet);
+                        onload(name);
+                    });
+                }
+            })(name, req, onload, config);
+        }
     }
 
     function unload(name, done) {
@@ -130,13 +178,22 @@ define(['lib/text'], function(text) {
         return prefix + id;
     }
 
+    function write(pluginName, moduleName, write) {
+        if (moduleName in buildMap) {
+            var text = buildMap[moduleName];
+            text = text.replace(/'/g, "\"");
+            write("define('" + pluginName + "!" + moduleName  + "', function () { return '" + text + "';});\n");
+        }
+    };
+
     return {
         load: load,
         unload: unload,
         getHead: getHead,
         add: add,
         addStyle: addStyle,
-        getId: getId
+        getId: getId,
+        write: write
     };
 
 });

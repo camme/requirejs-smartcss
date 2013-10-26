@@ -24,12 +24,34 @@ module.exports = function(grunt) {
             tasks:'mocha'
         },
 
+        requirejs: {
+            compile: {
+                options: {
+                    appDir: "./test/scripts",
+                    baseUrl: "./",
+                    optimize: "none",
+                    findNestedDependecies: true,
+                    dir: "./test/scripts-prod",
+                    paths: {
+                        css: "../../smartcss",
+                        text: "../../text",
+                        style: "../style"
+                    },
+                    modules: [
+                        { name: "test-module" }
+                    ],
+                    urlArgs: "ver=77"
+                }
+            }
+        }
+
     });
 
+    grunt.loadNpmTasks('grunt-requirejs');
     grunt.loadNpmTasks('grunt-mocha');
 
     // Default task.
-    grunt.registerTask('test', 'mocha');
+    grunt.registerTask('test', 'mocha', 'requirejs');
     grunt.registerTask('watch', 'watch');
 
 };

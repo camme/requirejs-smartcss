@@ -61,12 +61,13 @@ define(function(require) {
 
         });
 
-        it("Add the css to the head section as a style tag with the correct id", function() {
+        it("Add the css to the head section as a style tag with the correct id", function(done) {
 
             smartcss.load("style/chunk2.css", this.req, function() {
                 var styleObj = document.querySelector("#smartcss-style-chunk2-css");
                 chai.should().exist(styleObj);
                 styleObj.innerHTML.should.contain("#foo");
+                done();
             }, { 
                 smartcss: {
                     inject: true
@@ -135,13 +136,45 @@ define(function(require) {
 
         });
 
+        it("Adds the urlArgs to the url for getting the file", function(done) {
+
+            var url = "";
+
+            require(["text"], function(text) {
+
+                var oldGet = text.get;
+                text.get = function(name, next) {
+                    url = name;
+                    next();
+                };
+
+                smartcss.load("style/chunk2.css", this.req, function(obj) {
+                    url.should.equal("style/chunk2.css?version=111");
+                    text.get = oldGet;
+                    done();
+                }, { urlArgs: "version=111"});
+
+            });
+
+        });
+
         it("Adds the urlArgs to each url in a css", function(done) {
 
             var self = this;
             smartcss.load("style/chunk3.css", this.req, function() {
+
                 var obj = document.getElementById("foo");
-                var style = window.getComputedStyle(self.testObj, null);
+                var style = window.getComputedStyle(obj, null);
                 style.backgroundImage.should.contain("temp.png?seed=101001");
+
+                var obj = document.getElementById("picard");
+                var style = window.getComputedStyle(obj, null);
+                style.backgroundImage.should.contain("temp2.png?seed=101001");
+
+                var obj = document.getElementById("locutos");
+                var style = window.getComputedStyle(obj, null);
+                style.backgroundImage.should.contain("temp3.png?seed=101001");
+
                 done();
             }, { 
                 urlArgs: "seed=101001"
