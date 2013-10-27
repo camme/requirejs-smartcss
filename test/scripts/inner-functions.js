@@ -182,7 +182,15 @@ define(function(require) {
 
         });
 
+        it("has a method for escaping js into a single line", function() {
 
+            var content = "var a = 1;\nvar s = 'hello';\rvar foo = \"data\";\r\nvar bar = 2;";
+
+            var escaped = smartcss.escapeContent(content);
+
+            escaped.should.equal("var a = 1; var s = \"hello\"; var foo = \"data\"; var bar = 2;");
+
+        });
 
 
     });

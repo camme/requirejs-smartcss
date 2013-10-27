@@ -32,6 +32,14 @@ define(['text'], function(text) {
 
     }
 
+    function escapeContent(content) {
+        var escaped = content;
+        escaped = escaped.replace(/\r\n/g, " ");
+        escaped = escaped.replace(/[\n\r]/g, " ");
+        escaped = escaped.replace(/'/g, "\"");
+        return escaped;
+    }
+
     // Adds a style tag with the css content into it
     function addStyle(name, css) {
 
@@ -181,7 +189,7 @@ define(['text'], function(text) {
     function write(pluginName, moduleName, write) {
         if (moduleName in buildMap) {
             var text = buildMap[moduleName];
-            text = text.replace(/'/g, "\"").replace(/\n/g, "\\n");
+            text = escapeContent(text);
             write("define('" + pluginName + "!" + moduleName  + "', function () { return '" + text + "';});\n");
         }
     };
@@ -193,7 +201,8 @@ define(['text'], function(text) {
         add: add,
         addStyle: addStyle,
         getId: getId,
-        write: write
+        write: write,
+        escapeContent: escapeContent
     };
 
 });
