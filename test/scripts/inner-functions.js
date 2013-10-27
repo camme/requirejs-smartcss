@@ -192,6 +192,50 @@ define(function(require) {
 
         });
 
+        it("writes an optimized and escaped string with no new lines", function(done) {
+
+            var self = this;
+
+            var mockNodeRequire = function(module) {
+                if (module == 'fs') {
+                    return {
+                        readFileSync: function(name, encoding) {
+                            return "#foo {\n\tcolor: red;\n}\n";
+                        }
+                    };
+                }
+                if (module == 'path') {
+                    return {
+                        join: function() { return ""; }
+                    };
+                }
+            };
+
+            var old = require.nodeRequire;
+            requirejs.nodeRequire = mockNodeRequire;
+
+            smartcss.load("style/chunk3.css", {
+                toUrl:  function(moduleName) {
+                    return moduleName;
+                }
+            }, function() {
+
+                smartcss.write("smartcss", "style/chunk3.css", function(content) {
+
+                    content.indexOf("\n").should.equal(content.length - 1);
+                    content.should.not.contain("\r");
+
+                    requirejs.nodeRequire = old;
+
+                    done();
+
+                });
+
+
+            }, { isBuild: true } );
+
+        });
+
 
     });
 

@@ -51,7 +51,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-mocha');
 
     // Default task.
-    grunt.registerTask('test', 'mocha', 'requirejs');
+    grunt.registerTask('test', ['mocha', 'requirejs']);
     grunt.registerTask('watch', 'watch');
 
 };
