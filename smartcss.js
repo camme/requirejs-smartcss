@@ -149,14 +149,11 @@ define(['text'], function(text) {
             (function(name, req, onload, config) {
                 if ((config && config.smartcss && config.smartcss.inject === true) || (config && config.urlArgs)) {
 
+                    var url = req.toUrl(name);
+
                     // add the url args manually to the link since the text plugin doesnt seem to do it
                     if (config.urlArgs) {
-                        name += (name.indexOf("?") > -1 ? "&" : "?") + config.urlArgs;
-                    }
-
-                    var url = name;
-                    if (config.baseUrl && config.baseUrl != "./") {
-                        url = config.baseUrl + name;
+                        //url += (name.indexOf("?") > -1 ? "&" : "?") + config.urlArgs;
                     }
 
                     // fetch the data with the text plugin
