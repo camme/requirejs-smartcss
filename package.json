@@ -1,6 +1,6 @@
 {
   "name": "requirejs-smartcss",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Requirejs plugin for loading css, invalidating static content refered from css files and unloading css when needed",
   "main": "smartcss.js",
   "directories": {

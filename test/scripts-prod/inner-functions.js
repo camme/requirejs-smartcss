@@ -29,7 +29,6 @@ define(function(require) {
          });
 
         afterEach(function() {
-
             var testContent = document.getElementById("test-content");
             testContent.innerHTML = "";
 
@@ -37,7 +36,6 @@ define(function(require) {
             for(var i = 0, ii = headContent.length; i < ii; i++){
                 headContent[i].parentNode.removeChild(headContent[i]);
             }
-
         });
 
         it("getHead returns the HEAD element", function() {
@@ -80,7 +78,7 @@ define(function(require) {
 
         it("Add the css to the head section as link tag with the correct id", function(done) {
 
-            smartcss.add("style/chunk2.css", this.config, function() {
+            smartcss.add("style/chunk2.css", function() {
                 var styleObj = document.querySelector("#smartcss-style-chunk2-css");
                 chai.should().exist(styleObj);
                 styleObj.getAttribute("href").should.be.equal("style/chunk2.css");
@@ -126,7 +124,7 @@ define(function(require) {
 
         it("Add returns the style dom object", function(done) {
 
-            smartcss.add("style/chunk2.css", this.config, function(obj) {
+            smartcss.add("style/chunk2.css", function(obj) {
                 chai.should().exist(obj);
                 obj.getAttribute("href").should.be.equal("style/chunk2.css");
 
@@ -159,39 +157,6 @@ define(function(require) {
             });
 
         });
-
-        it("Will use the baseUrl for constructing the url when using the link tag" , function(done) {
-
-            smartcss.load("style/chunk2.css", this.req, function(obj) {
-                var obj = document.getElementById("smartcss-style-chunk2-css");
-                obj.getAttribute("href").should.be.equal("foo/bar/style/chunk2.css");
-                done();
-            }, { baseUrl: "foo/bar/"});
-
-        });
-
-        it("Will use the baseUrl for constructing the url when injecting" , function(done) {
-
-            var url = "";
-
-            require(["text"], function(text) {
-
-                var oldGet = text.get;
-                text.get = function(name, next) {
-                    url = name;
-                    next();
-                };
-
-                smartcss.load("style/chunk2.css", this.req, function(obj) {
-                    url.should.equal("foo/bar/style/chunk2.css?version=111");
-                    text.get = oldGet;
-                    done();
-                }, { baseUrl: "foo/bar/", urlArgs: "version=111"});
-
-            });
-
-        });
-
 
         it("Adds the urlArgs to each url in a css", function(done) {
 

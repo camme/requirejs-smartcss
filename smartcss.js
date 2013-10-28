@@ -62,12 +62,17 @@ define(['text'], function(text) {
         }
     }
 
-    function add(url, done) {
+    function add(name, config, done) {
+
+        var url = name;
+        if (config.baseUrl && config.baseUrl != "./") {
+            url = config.baseUrl + name;
+        }
 
         var loaded = false;
 
         var head = getHead();
-        var id = getId(url);
+        var id = getId(name);
 
         var link = document.createElement("link");
         link.setAttribute("id", id);
@@ -149,8 +154,13 @@ define(['text'], function(text) {
                         name += (name.indexOf("?") > -1 ? "&" : "?") + config.urlArgs;
                     }
 
+                    var url = name;
+                    if (config.baseUrl && config.baseUrl != "./") {
+                        url = config.baseUrl + name;
+                    }
+
                     // fetch the data with the text plugin
-                    text.get(name, function(css) {
+                    text.get(url, function(css) {
 
                         if (config.urlArgs) {
                             css = addUrlArgs(css, config);
@@ -162,7 +172,7 @@ define(['text'], function(text) {
 
                 }
                 else {
-                    add(name, function(obj) {
+                   add(name, config, function(obj) {
                         //console.log(obj.sheet);
                         onload(name);
                     });
