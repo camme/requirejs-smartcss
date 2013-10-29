@@ -450,12 +450,17 @@ define('css',['text'], function(text) {
         }
     }
 
-    function add(url, done) {
+    function add(name, config, done) {
+
+        var url = name;
+        if (config.baseUrl && config.baseUrl != "./") {
+            url = config.baseUrl + name;
+        }
 
         var loaded = false;
 
         var head = getHead();
-        var id = getId(url);
+        var id = getId(name);
 
         var link = document.createElement("link");
         link.setAttribute("id", id);
@@ -532,13 +537,15 @@ define('css',['text'], function(text) {
             (function(name, req, onload, config) {
                 if ((config && config.smartcss && config.smartcss.inject === true) || (config && config.urlArgs)) {
 
+                    var url = req.toUrl(name);
+
                     // add the url args manually to the link since the text plugin doesnt seem to do it
                     if (config.urlArgs) {
-                        name += (name.indexOf("?") > -1 ? "&" : "?") + config.urlArgs;
+                        //url += (name.indexOf("?") > -1 ? "&" : "?") + config.urlArgs;
                     }
 
                     // fetch the data with the text plugin
-                    text.get(name, function(css) {
+                    text.get(url, function(css) {
 
                         if (config.urlArgs) {
                             css = addUrlArgs(css, config);
@@ -550,7 +557,7 @@ define('css',['text'], function(text) {
 
                 }
                 else {
-                    add(name, function(obj) {
+                   add(name, config, function(obj) {
                         //console.log(obj.sheet);
                         onload(name);
                     });
@@ -578,7 +585,7 @@ define('css',['text'], function(text) {
         if (moduleName in buildMap) {
             var text = buildMap[moduleName];
             text = escapeContent(text);
-            write("define('" + pluginName + "!" + moduleName  + "', function () { return '" + text + "';});\n");
+            write("define('" + pluginName + "!" + moduleName  + "', ['" + pluginName + "'], function (smartcss) { css.add('" + moduleName + "', '" + text + "');});\n");
         }
     };
 
@@ -595,11 +602,11 @@ define('css',['text'], function(text) {
 
 });
 
-define('css!style/chunk1.css', function () { return '#foo {     color: rgb(255, 0, 0);     font-size: 40px; }   /*@ sourceURL=style/chunk1.css */';});
+define('css!style/chunk1.css', ['css'], function (smartcss) { css.add('style/chunk1.css', '#foo {     color: rgb(255, 0, 0);     font-size: 40px; }   /*@ sourceURL=style/chunk1.css */');});
 
-define('css!style/chunk2.css', function () { return '#foo {     color: rgb(0, 255, 0);     font-size: 77px; }   /*@ sourceURL=style/chunk2.css */';});
+define('css!style/chunk2.css', ['css'], function (smartcss) { css.add('style/chunk2.css', '#foo {     color: rgb(0, 255, 0);     font-size: 77px; }   /*@ sourceURL=style/chunk2.css */');});
 
-define('css!style/chunk3.css', function () { return '#foo {     background: url("images/temp.png"); }  #picard {     background: url("images/temp2.png"); }  #locutos {     background: url(images/temp3.png); }    /*@ sourceURL=style/chunk3.css */';});
+define('css!style/chunk3.css', ['css'], function (smartcss) { css.add('style/chunk3.css', '#foo {     background: url("images/temp.png"); }  #picard {     background: url("images/temp2.png"); }  #locutos {     background: url(images/temp3.png); }    /*@ sourceURL=style/chunk3.css */');});
 
 
 require([
