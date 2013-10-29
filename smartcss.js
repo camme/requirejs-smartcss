@@ -197,7 +197,7 @@ define(['text'], function(text) {
         if (moduleName in buildMap) {
             var text = buildMap[moduleName];
             text = escapeContent(text);
-            write("define('" + pluginName + "!" + moduleName  + "', ['" + pluginName + "'], function (smartcss) { smartcss.add('" + moduleName + "', '" + text + "');});\n");
+            write("define('" + pluginName + "!" + moduleName  + "', ['" + pluginName + "'], function (smartcss) { smartcss.addStyle('" + moduleName + "', '" + text + "');});\n");
         }
     };
 
