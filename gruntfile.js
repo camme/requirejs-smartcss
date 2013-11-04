@@ -53,7 +53,9 @@ module.exports = function(grunt) {
                         { name: "test-module" }
                     ],
                     smartcss: {
-                        urlArgs: "ver=77"
+                        urlArgs: function() {
+                            return "ver=77";
+                        }
                     }
                 }
             }

@@ -139,7 +139,11 @@ define(['text'], function(text) {
             var url = req.toUrl(name);
             var content = fs.readFileSync(url, 'utf8');
             if (config.smartcss && config.smartcss.urlArgs) {
-                content = addUrlArgs(content, {urlArgs: config.smartcss.urlArgs});
+                var urlArgs = config.smartcss.urlArgs;
+                if (typeof config.smartcss.urlArgs == "function") {
+                    urlArgs = config.smartcss.urlArgs();
+                }
+                content = addUrlArgs(content, {urlArgs: urlArgs});
             }
             content = content + "\n /*@ sourceURL=" + name + " */";
             buildMap[name] = content;
