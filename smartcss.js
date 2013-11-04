@@ -138,8 +138,8 @@ define(['text'], function(text) {
             var path = require.nodeRequire('path');
             var url = req.toUrl(name);
             var content = fs.readFileSync(url, 'utf8');
-            if (config.urlArgs) {
-                content = addUrlArgs(content, config);
+            if (config.smartcss && config.smartcss.urlArgs) {
+                content = addUrlArgs(content, {urlArgs: config.smartcss.urlArgs});
             }
             content = content + "\n /*@ sourceURL=" + name + " */";
             buildMap[name] = content;

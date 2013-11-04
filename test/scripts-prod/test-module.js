@@ -526,8 +526,8 @@ define('css',['text'], function(text) {
             var path = require.nodeRequire('path');
             var url = req.toUrl(name);
             var content = fs.readFileSync(url, 'utf8');
-            if (config.urlArgs) {
-                content = addUrlArgs(content, config);
+            if (config.smartcss && config.smartcss.urlArgs) {
+                content = addUrlArgs(content, {urlArgs: config.smartcss.urlArgs});
             }
             content = content + "\n /*@ sourceURL=" + name + " */";
             buildMap[name] = content;
@@ -585,7 +585,7 @@ define('css',['text'], function(text) {
         if (moduleName in buildMap) {
             var text = buildMap[moduleName];
             text = escapeContent(text);
-            write("define('" + pluginName + "!" + moduleName  + "', ['" + pluginName + "'], function (smartcss) { css.add('" + moduleName + "', '" + text + "');});\n");
+            write("define('" + pluginName + "!" + moduleName  + "', ['" + pluginName + "'], function (smartcss) { smartcss.addStyle('" + moduleName + "', '" + text + "');});\n");
         }
     };
 
@@ -602,11 +602,11 @@ define('css',['text'], function(text) {
 
 });
 
-define('css!style/chunk1.css', ['css'], function (smartcss) { css.add('style/chunk1.css', '#foo {     color: rgb(255, 0, 0);     font-size: 40px; }   /*@ sourceURL=style/chunk1.css */');});
+define('css!style/chunk1.css', ['css'], function (smartcss) { smartcss.addStyle('style/chunk1.css', '#foo {     color: rgb(255, 0, 0);     font-size: 40px; }   /*@ sourceURL=style/chunk1.css */');});
 
-define('css!style/chunk2.css', ['css'], function (smartcss) { css.add('style/chunk2.css', '#foo {     color: rgb(0, 255, 0);     font-size: 77px; }   /*@ sourceURL=style/chunk2.css */');});
+define('css!style/chunk2.css', ['css'], function (smartcss) { smartcss.addStyle('style/chunk2.css', '#foo {     color: rgb(0, 255, 0);     font-size: 77px; }   /*@ sourceURL=style/chunk2.css */');});
 
-define('css!style/chunk3.css', ['css'], function (smartcss) { css.add('style/chunk3.css', '#foo {     background: url("images/temp.png"); }  #picard {     background: url("images/temp2.png"); }  #locutos {     background: url(images/temp3.png); }    /*@ sourceURL=style/chunk3.css */');});
+define('css!style/chunk3.css', ['css'], function (smartcss) { smartcss.addStyle('style/chunk3.css', '#foo {     background: url("images/temp.png?ver=77"); }  #picard {     background: url("images/temp2.png?ver=77"); }  #locutos {     background: url(images/temp3.png?ver=77); }    /*@ sourceURL=style/chunk3.css */');});
 
 
 require([

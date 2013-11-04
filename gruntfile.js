@@ -19,6 +19,18 @@ module.exports = function(grunt) {
             }
         },
 
+        simplemocha: {
+            all: {
+                src: 'test/optimizer/**/*.js',
+                options: {
+                    timeout: 5000,
+                    ignoreLeaks: false,
+                    ui: 'bdd',
+                    reporter: 'tap'
+                }
+            }
+        },
+
         watch: {
             files: ['test/**/*.*'],
             tasks:'mocha'
@@ -40,7 +52,9 @@ module.exports = function(grunt) {
                     modules: [
                         { name: "test-module" }
                     ],
-                    urlArgs: "ver=77"
+                    smartcss: {
+                        urlArgs: "ver=77"
+                    }
                 }
             }
         }
@@ -48,10 +62,11 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-requirejs');
+    grunt.loadNpmTasks('grunt-simple-mocha');
     grunt.loadNpmTasks('grunt-mocha');
 
     // Default task.
-    grunt.registerTask('test', ['mocha', 'requirejs']);
+    grunt.registerTask('test', ['mocha', 'requirejs', 'simplemocha']);
     grunt.registerTask('watch', 'watch');
 
 };
